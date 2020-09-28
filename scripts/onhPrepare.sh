@@ -3,6 +3,9 @@
 # Go to home directory
 cd
 
+# Branch name to install
+BRANCH=$1
+
 # Wait on database
 DB_STARTED="inactive"
 while [ "$DB_STARTED" != "active" ]
@@ -28,9 +31,36 @@ _EOF_
 # Clone onh repo
 git clone --recursive https://github.com/matmir/openNetworkHMI.git
 
-# Install onh
+if [ "$?" -ne "0" ]
+then
+	echo "Clone project failed - check logs"
+	exit 1
+fi
+
 cd openNetworkHMI
+
+# Check branch flag
+if [ -z "$BRANCH" ]
+then
+	echo "Installing default master branch"
+else
+	echo "Checkout openNetworkHMI to $BRANCH"
+	git checkout $BRANCH
+	if [ "$?" -ne "0" ]
+	then
+		echo "openNetworkHMI checkout to $BRANCH failed - see logs"
+		exit 1
+	fi
+fi
+
+# Install onh
 sh install.sh
+
+if [ "$?" -ne "0" ]
+then
+	echo "Installation failed - check logs"
+	exit 1
+fi
 
 echo "Prepare www"
 
