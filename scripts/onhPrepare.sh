@@ -6,6 +6,11 @@ cd
 # Branch name to install
 BRANCH=$1
 
+# Install script params
+ONH_CHECKOUT="checkoutON"
+ONH_ASK=$2
+ONH_TEST=$3
+
 # Wait on database
 DB_STARTED="inactive"
 while [ "$DB_STARTED" != "active" ]
@@ -54,7 +59,7 @@ else
 fi
 
 # Install onh
-sh install.sh
+sh install.sh $ONH_CHECKOUT $ONH_ASK $ONH_TEST
 
 if [ "$?" -ne "0" ]
 then

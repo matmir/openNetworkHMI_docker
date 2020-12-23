@@ -1,5 +1,50 @@
 #!/bin/bash
 
+# Input parameters
+PARAM_BRANCH="$5"
+PARAM_ASK="$6"
+PARAM_TEST="$7"
+
+# Check install script params
+check_params() {
+
+	# Ask select
+	if [ -z "$PARAM_ASK" ]
+	then
+    	echo "No asking mode"
+	else
+		if [ "$PARAM_ASK" = "ask" ]
+		then
+			echo "Asking mode ON"
+		elif [ "$PARAM_ASK" = "askOFF" ]
+		then
+			echo "Asking mode OFF"
+		else
+			echo "Invalid ASK parameter"
+			exit 1
+		fi
+	fi
+
+	# Tests select
+	if [ -z "$PARAM_TEST" ]
+	then
+    	echo "No test build"
+	else
+		if [ "$PARAM_TEST" = "test" ]
+		then
+			echo "Test build ON"
+		elif [ "$PARAM_TEST" = "testOFF" ]
+		then
+			echo "Test build OFF"
+		else
+			echo "Invalid TEST parameter"
+			exit 1
+		fi
+	fi
+
+	return 0
+}
+
 # Stop test container
 stopTestContainer() {
 
@@ -27,11 +72,13 @@ removeTestContainer() {
 }
 
 # Check arguments
-if [ $# -lt 4 ] || [ $# -gt 5 ]
+if [ $# -lt 4 ] || [ $# -gt 7 ]
 then
-	echo "Usage: ./createOnhImage.sh baseImageTag cleanImageTag CommitComment CommitUser [branchName]"
+	echo "Usage: ./createOnhImage.sh baseImageTag cleanImageTag CommitComment CommitUser [branchName] [askMode] [buildTest]"
 	exit 1
 fi
+
+check_params
 
 # Check if base image exist
 if [[ "$(docker images -q onh-base:$1 2> /dev/null)" == "" ]]; then
@@ -71,7 +118,7 @@ if [[ "$(docker images -q onh-base:$1 2> /dev/null)" != "" ]]; then
 	fi
 
 	# Run script
-	docker exec -it --user=onh onh-test bash /home/onh/onhPrepare.sh $5
+	docker exec -it --user=onh onh-test bash /home/onh/onhPrepare.sh $PARAM_BRANCH $PARAM_ASK $PARAM_TEST
 
 	if [ "$?" -ne "0" ]
 	then

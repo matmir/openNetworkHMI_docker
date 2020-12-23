@@ -40,13 +40,14 @@ WORKDIR /home/onh/
 RUN mkdir modbus && cd modbus \
 	&& git clone https://github.com/stephane/libmodbus/ \
 	&& cd libmodbus \
-	&& ./autogen.sh && ./configure --prefix=/usr && make && make install && ln -s /usr/include/modbus/ /usr/local/include/modbus
+	&& ./autogen.sh && ./configure --prefix=/usr && make && make install
 
 # Install googletest
 RUN mkdir gtest && cd gtest \
 	&& git clone https://github.com/google/googletest/ \
 	&& cd googletest \
-	&& cmake CMakeLists.txt && make && make install
+	&& mkdir build && cd build \
+	&& cmake .. && make && make install
 
 # Install composer
 RUN mkdir composer && cd composer \
